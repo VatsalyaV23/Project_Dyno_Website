@@ -1,0 +1,222 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>{{ food.name }} - Food Details</title>
+
+  <style>
+    body {
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .card {
+      display: flex;
+      max-width: 900px;
+      margin: 40px auto;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+
+    .card img {
+      width: 45%;
+      height: auto;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 30px;
+      width: 55%;
+    }
+
+    .card-content h2 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .card-content p {
+      margin: 8px 0;
+      color: #555;
+    }
+
+    .rating {
+      color: orange;
+    }
+
+    .buttons {
+      margin-top: 20px;
+    }
+
+    .buttons a,
+    .buttons button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      background-color: orange;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .buttons button:hover,
+    .buttons a:hover {
+      background-color: darkorange;
+    }
+
+    .reviews {
+      max-width: 900px;
+      margin: 20px auto;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .review-box {
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
+    }
+
+    .review-box:last-child {
+      border-bottom: none;
+    }
+
+    .review-box strong {
+      color: #222;
+    }
+
+    .review-box small {
+      color: #888;
+    }
+
+    .review-box span {
+      color: orange;
+    }
+  </style>
+</head>
+<body>
+
+<div style="display: flex; justify-content: center; align-items: center; min-height: 80vh; background: rgba(255,255,255,0.95); padding: 20px;">
+    <div style="display: flex; max-width: 1000px; width: 100%; background: white; box-shadow: 0 0 25px rgba(0,0,0,0.1); border-radius: 16px; overflow: hidden; position: relative;">
+
+        <!-- Image Left -->
+        <div style="flex: 1;">
+            <img src="{{ food.image.url }}" alt="{{ food.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+
+        <!-- Details Right -->
+        <div style="flex: 1; padding: 30px; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+            <div>
+                <h2 style="margin-bottom: 10px;">{{ food.name }}</h2>
+                <p><strong>Description:</strong> {{ food.description }}</p>
+                <p><strong>Price:</strong> ₹{{ food.price }}</p>
+                <p><strong>Rating:</strong> 
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= food.rating|add:"0" %}
+                            <span style="color: orange;">★</span>
+                        {% else %}
+                            <span style="color: lightgray;">★</span>
+                        {% endif %}
+                    {% endfor %}
+                    <span style="color: #555;">({{ food.rating }}/5)</span>
+                </p>
+
+                <div style="margin-top: 20px;">
+                    <h4>Reviews</h4>
+                    {% if reviews %}
+                        {% for review in reviews %}
+                            <p><strong>{{ review.user.username }}</strong>: {{ review.comment }}</p>
+                        {% endfor %}
+                    {% else %}
+                        <p>No reviews yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div style="display: flex; gap: 10px; justify-content: flex-end; align-items: center; margin-top: 30px;">
+                <a href="{% url 'order_now' food.id %}" style="background-color: orange; color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; display: flex; align-items: center;">
+                    🛒 Order Now
+                </a>
+                <form action="{% url 'add_to_cart' food.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="fa fa-cart-plus me-1"></i> Add to Cart
+                    </button>
+                  </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+  <div class="reviews">
+    <h3>Customer Reviews</h3>
+    {% if food.reviews.exists %}
+      {% for review in food.reviews.all %}
+        <div class="review-box">
+          <strong>{{ review.user.username }}</strong>
+          <small> – {{ review.created_at|date:"M d, Y" }}</small><br>
+          <span>⭐ {{ review.rating }}/5</span>
+          <p>{{ review.comment }}</p>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No reviews yet.</p>
+    {% endif %}
+  </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const addBtn = document.querySelector(".add-to-cart-btn");
+
+    addBtn.addEventListener("click", function () {
+        const foodId = this.dataset.foodId;
+        const url = this.dataset.url;
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `food_id=${foodId}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Item added to cart!");
+            } else {
+                alert("Failed to add item.");
+            }
+        });
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const trimmed = cookie.trim();
+            if (trimmed.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(trimmed.slice(name.length + 1));
+                break;
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,275 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DYNO - Cart</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url("{% static 'accounts/images1/bg-pattern.jpg' %}");
+      background-size: cover;
+      background-attachment: fixed;
+    }
+
+    .cart-card {
+      background-color: rgba(255, 255, 255, 0.93);
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-bottom: 22px;
+      overflow: hidden;
+      transition: box-shadow 0.2s, transform 0.2s;
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      min-height: 220px;
+      padding: 0;
+    }
+    .cart-card:hover {
+      box-shadow: 0 6px 24px rgba(0,0,0,0.17);
+      transform: scale(1.01);
+    }
+
+    .cart-img {
+      width: 200px;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 14px 0 0 14px;
+      flex-shrink: 0;
+    }
+    .cart-details {
+      flex: 1;
+      padding: 22px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .cart-title {
+      font-weight: bold;
+      color: #333;
+      font-size: 1.35em;
+      margin-bottom: 0.5rem;
+    }
+    .cart-desc {
+      color: #6c757d;
+      font-size: 1em;
+      margin-bottom: 0.4rem;
+    }
+    .rating-details {
+      font-size: 0.97em;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    .star-rating {
+      color: #FFD700;
+      font-size: 1.1em;
+      margin-right: 6px;
+    }
+    .cart-btns {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background-color: #ff5722;
+      border: none;
+      border-radius: 8px;
+      min-width: 100px;
+    }
+    .btn-primary:hover {
+      background-color: #e64a19;
+    }
+    .btn-outline-danger {
+      border-color: #ff5722;
+      color: #ff5722;
+      border-radius: 8px;
+      min-width: 90px;
+    }
+    .btn-outline-danger:hover {
+      background-color: #ff5722;
+      color: #fff;
+    }
+    .total-box {
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .fade-in-out {
+      animation: fade-in-out 2.5s;
+    }
+    @keyframes fade-in-out {
+      0% { opacity: 0; transform: translateY(-10px);}
+      10% { opacity: 1; transform: translateY(0);}
+      85% { opacity: 1;}
+      100% { opacity: 0;}
+    }
+    @media (max-width: 767px) {
+      .cart-card { flex-direction: column; min-height: unset;}
+      .cart-img { width: 100%; border-radius: 14px 14px 0 0; height: 190px;}
+      .cart-details { padding: 18px 12px;}
+      .cart-btns { flex-direction: column; }
+    }
+
+    .cart-img {
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 14px 0 0 14px;
+      flex-shrink: 0;
+    }
+
+    .quantity-btn {
+      width: 36px; 
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h2 class="mb-4 text-center">🛒 Your Cart</h2>
+    {% for item in cart_items %}
+      <div class="cart-card">
+        <img src="{{ item.image }}" class="cart-img" alt="{{ item.name }}">
+        <div class="cart-details">
+          <div class="cart-title">{{ item.name }}</div>
+          <div class="cart-desc">{{ item.description|default:"Delicious food from DYNO." }}</div>
+          <div class="rating-details mb-1">
+            <span class="star-rating">
+            {% for i in "12345" %}
+              <i class="{% if item.rating|default:0|floatformat:0 >= i|add:"0" %}fas fa-star{% elif item.rating|default:0|floatformat:1 >= i|add:"-0.5" %}fas fa-star-half-alt{% else %}far fa-star{% endif %}"></i>
+            {% endfor %}
+            </span>
+            <span>
+              <strong>{{ item.rating|default:"0.0" }}/5</strong>
+              ({{ item.reviews_count|default:"0" }} ratings)
+            </span>
+          </div>
+          <p class="mb-1"><strong>Price per unit:</strong> ₹{{ item.price }}</p>
+          <form class="quantity-form d-flex align-items-center mb-2" data-url="{% url 'update_quantity' %}">
+            {% csrf_token %}
+            <input type="hidden" name="item_name" value="{{ item.id }}">
+            <button type="button" class="btn btn-outline-danger btn-sm me-2 quantity-btn" data-action="decrease">−</button>
+            <span class="mx-2 quantity-text">{{ item.quantity }}</span>
+            <button type="button" class="btn btn-outline-success btn-sm ms-2 quantity-btn" data-action="increase">+</button>
+          </form>
+          <p class="mb-2"><strong>Subtotal: ₹{{ item.total }}</strong></p>
+          <div class="cart-btns">
+            <form action="{% url 'remove_from_cart' %}" method="POST" class="d-inline">
+              {% csrf_token %}
+              <input type="hidden" name="item_name" value="{{ item.id }}">
+              <button type="submit" class="btn btn-outline-danger">Remove</button>
+            </form>
+            <form action="{% url 'order_now' item.id %}" method="POST" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary">Order Now</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+
+    {% if cart_items %}
+      <div class="row justify-content-center mt-4">
+        <div class="col-md-6 total-box text-center">
+          <h4>Total Amount: ₹{{ total_price }}</h4>
+          <form action="{% url 'order_all' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success mt-3 w-100">Proceed to Checkout</button>
+          </form>
+        </div>
+      </div>
+    {% else %}
+      <div class="alert alert-info text-center">
+        Your cart is empty. <a href="{% url 'home' %}">Browse items</a> to add.
+      </div>
+    {% endif %}
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Smooth quantity update with animation
+    document.querySelectorAll('.quantity-form').forEach(form => {
+      form.querySelectorAll('.quantity-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          const action = button.dataset.action;
+          const itemId = form.querySelector('[name="item_name"]').value;
+          const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+          const url = form.dataset.url;
+
+          fetch(url, {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': csrfToken,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ action: action, item_name: itemId }),
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              const quantitySpan = form.querySelector('.quantity-text');
+              quantitySpan.textContent = data.quantity;
+              const subtotal = form.closest('.cart-details').querySelector('p.mb-2 strong');
+              subtotal.textContent = `Subtotal: ₹${data.subtotal}`;
+              const totalBox = document.querySelector('.total-box h4');
+              if (totalBox) totalBox.textContent = `Total Amount: ₹${data.total_price}`;
+              // Animate the quantity
+              quantitySpan.classList.add('fade-in-out');
+              setTimeout(() => quantitySpan.classList.remove('fade-in-out'), 800);
+            }
+          });
+        });
+      });
+    });
+
+    // Add to cart with popup
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const foodId = this.dataset.foodId;
+        const url = this.dataset.url;
+        fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+          body: JSON.stringify({ food_id: foodId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            showCartPopup();
+          }
+        });
+      });
+    });
+
+    function showCartPopup() {
+      const popup = document.getElementById('cartPopup');
+      popup.style.display = 'block';
+      setTimeout(() => { popup.style.display = 'none'; }, 2200);
+    }
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  </script>
+</body>
+</html>

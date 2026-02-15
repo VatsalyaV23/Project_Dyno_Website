@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Your Orders | DYNO</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .orders-container {
+      max-width: 1000px;
+      margin: 60px auto;
+    }
+    .card.food-card {
+      background-color: rgba(255, 255, 255, 0.95);
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.12);
+      transition: transform 0.2s ease-in-out;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 15px;
+      margin-bottom: 25px;
+    }
+    .card.food-card:hover {
+      transform: scale(1.01);
+    }
+    .card-img-left {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .card-body {
+      padding-left: 30px;
+    }
+    .card-title {
+      font-weight: 600;
+      color: #333;
+    }
+    .btn-primary {
+      background-color: #ff5722;
+      border: none;
+      border-radius: 8px;
+    }
+    .btn-primary:hover {
+      background-color: #e64a19;
+    }
+    .badge-status {
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+    .delivering {
+      background-color: #ff9800;
+      color: white;
+      animation: pulse 1.5s infinite;
+    }
+    .delivered {
+      background-color: #4caf50;
+      color: white;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.6); }
+      70% { box-shadow: 0 0 0 10px rgba(255, 152, 0, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); }
+    }
+  </style>
+</head>
+<body>
+<div class="orders-container">
+  <h2 class="text-center text-white mb-5">Your Orders</h2>
+  {% if orders %}
+    {% for order in orders %}
+      <div class="card food-card">
+        <div class="row g-0 align-items-center w-100">
+          <div class="col-md-4">
+            <img src="{{ order.food_item.image.url }}" alt="{{ order.food_item.name }}" class="img-fluid card-img-left">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">{{ order.food_item.name }}</h5>
+              <p class="card-text">{{ order.food_item.description|truncatechars:100 }}</p>
+              <p class="card-text mb-1"><strong>Price:</strong> ₹{{ order.food_item.price }}</p>
+              <p class="card-text mb-1"><strong>Ordered on:</strong> {{ order.timestamp|date:"F d, Y H:i A" }}</p>
+              <p class="card-text mb-1">
+                <strong>Status:</strong>
+                {% if order.status == "Delivering" %}
+                  <span class="badge-status delivering">🚚 Delivering ({{ order.remaining_time }} min left)</span>
+                {% else %}
+                  <span class="badge-status delivered">✅ Delivered</span>
+                {% endif %}
+              </p>
+              <a href="{% url 'order_again' order.id %}" class="btn btn-primary mt-2">Order Again</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-center text-white fs-5">You haven't placed any orders yet.</p>
+  {% endif %}
+</div>
+</body>
+</html>

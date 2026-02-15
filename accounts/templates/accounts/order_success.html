@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Placed</title>
+  <meta http-equiv="refresh" content="5;url={% url 'home' %}">
+  <style>
+    body {
+      background-color: #d4edda;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .message {
+      font-size: 26px;
+      color: #155724;
+      text-align: center;
+      animation: fadeSlideIn 1.2s ease-out forwards;
+      transform: translateY(40px);
+      opacity: 0;
+    }
+
+    @keyframes fadeSlideIn {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .emoji {
+      font-size: 56px;
+      animation: bounce 1.5s infinite;
+      display: block;
+      margin-bottom: 20px;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-14px); }
+    }
+
+    .food-name,
+    .delivery-time {
+      font-weight: bold;
+      position: relative;
+      display: inline-block;
+      animation: shimmer 2s infinite linear;
+    }
+
+    @keyframes shimmer {
+      0% { text-shadow: 0 0 3px #a4ffaf; }
+      50% { text-shadow: 0 0 10px #7fffaf; }
+      100% { text-shadow: 0 0 3px #a4ffaf; }
+    }
+
+    .redirect-note {
+      font-size: 14px;
+      color: #155724;
+      margin-top: 20px;
+      animation: fadeIn 2s ease-in forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 0.8; }
+    }
+  </style>
+</head>
+<body>
+  <div class="message">
+    <div class="emoji">✅</div>
+    Your order for <span class="food-name">{{ order.food_name }}</span> has been placed!<br>
+    Estimated delivery in <span class="delivery-time">{{ minutes_remaining }}</span> minutes.
+    <div class="redirect-note">
+      Redirecting you to the homepage...
+    </div>
+  </div>
+</body>
+</html>

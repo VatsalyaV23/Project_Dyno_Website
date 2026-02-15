@@ -1,0 +1,868 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DYNO - Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url("{% static 'accounts/images1/bg-pattern.jpg' %}");
+      background-size: cover;
+      background-attachment: fixed;
+    }
+
+    html, body {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body > .container {
+      flex: 1;
+    }
+
+    .navbar {
+      background-color: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .navbar-brand {
+      font-weight: bold;
+      color: #ff5722;
+    }
+
+    .nav-link {
+      color: #333;
+      margin-left: 15px;
+    }
+
+    .card.food-card {
+      background-color: rgba(255, 255, 255, 0.88);
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.12);
+      transition: transform 0.2s ease-in-out;
+      min-height: 220px;
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      padding: 15px 10px 15px 10px;
+      overflow: hidden;
+      height: 220px;
+      margin-bottom: 18px;
+      gap: 0;
+    }
+
+    .card.food-card:hover {
+      transform: scale(1.01);
+    }
+
+    .card-img-left {
+      width: 200px;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+
+    .card-body {
+      padding-left: 25px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .card-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      margin-top: 0;
+    }
+    .star-rating {
+      color: #FFD700;
+      font-size: 1.1em;
+      margin-right: 6px;
+    }
+    .rating-details {
+      font-size: 0.97em;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .btn-primary {
+      background-color: #ff5722;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 12px;
+      margin-right: 10px;
+    }
+
+    .btn-primary:hover {
+      background-color: #e64a19;
+    }
+
+    .btn-outline-secondary {
+      border-color: #ff5722;
+      color: #ff5722;
+      border-radius: 8px;
+      padding: 7px 12px;
+    }
+
+    .btn-outline-secondary:hover {
+      background-color: #ff5722;
+      color: #fff;
+    }
+
+    .profile-sidebar {
+      position: fixed;
+      top: 0;
+      right: -300px;
+      width: 300px;
+      height: 100%;
+      background: #ffffff;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+      padding: 20px;
+      transition: right 0.3s ease;
+      z-index: 1050;
+    }
+
+    .profile-sidebar.active {
+      right: 0;
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+
+    .profile-option {
+      margin: 15px 0;
+    }
+
+    .profile-option a {
+      text-decoration: none;
+      font-size: 16px;
+      color: #333;
+      display: block;
+    }
+
+    .search-bar {
+      margin: 30px 0 20px;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.3);
+      display: none;
+      z-index: 1040;
+    }
+
+    #overlay.active {
+      display: block;
+    }
+
+    .profile-option i {
+      margin-right: 10px;
+    }
+
+    .sidebar-divider {
+      border-top: 1px solid #ddd;
+      margin: 20px 0;
+    }
+    
+    footer {
+      margin-top: auto;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      border-radius: 0 0 15px 15px;
+    }
+
+    .main-flex {
+      display: flex;
+      flex-wrap: nowrap;
+    }
+    .food-list-scroll {
+      max-height: 70vh;
+      overflow-y: auto;
+      padding-right: 0;
+      scrollbar-width: none; /* Firefox */
+    }
+    .food-list-scroll::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+
+    .suggestion-sticky {
+      position: sticky;
+      top: 100px;
+      height: fit-content;
+    }
+
+    .filter-btn-group {
+      margin-bottom: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .filter-btn {
+      border-radius: 20px;
+      background: #fff;
+      border: 1px solid #ff5722;
+      color: #ff5722;
+      font-weight: 500;
+      transition: background .18s, color .18s;
+      padding: 6px 18px;
+      cursor: pointer;
+    }
+    .filter-btn.active,
+    .filter-btn:hover {
+      background: #ff5722;
+      color: #fff;
+    }
+    @media (max-width: 991px){
+      .main-flex {
+        flex-direction: column;
+      }
+      .suggestion-sticky {
+        position: static;
+        top: auto;
+      }
+      .food-list-scroll {
+        max-height: none;
+        overflow-y: visible;
+        padding-right: 0;
+      }
+    }
+    /* Fix for extra spaces */
+    .food-list-scroll > .food-card:last-child {
+      margin-bottom: 0 !important;
+    }
+
+    /* Fancy Add-to-Cart Popup */
+    #cartPopup {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #ff5722, #ff9800);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+      font-size: 16px;
+      font-weight: 500;
+      z-index: 2000;
+      animation: slideIn 0.5s ease, fadeOut 0.5s ease 2s forwards;
+    }
+    #cartPopup i {
+      margin-right: 8px;
+      font-size: 18px;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-20px) translateX(20px); }
+      to { opacity: 1; transform: translateY(0) translateX(0); }
+    }
+
+    @keyframes fadeOut {
+      to { opacity: 0; transform: translateY(-20px) translateX(20px); }
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(-10px);}
+      10% { opacity: 1; transform: translateY(0);}
+      85% { opacity: 1;}
+      100% { opacity: 0;}
+    }
+    .suggestion-sticky {
+      position: sticky;
+      top: 100px;
+    }
+    #chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-family: Arial, sans-serif;
+    }
+    #chatbot-toggle {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+    }
+    #chatbot-box {
+      width: 300px;
+      height: 400px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+    #chatbot-header {
+      background: #2563eb;
+      color: white;
+      padding: 10px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+    }
+    #chatbot-messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+    .user-msg {
+      text-align: right;
+      background: #ffccbc; /* light orange */
+      color: #333;
+      padding: 6px 10px;
+      margin: 6px;
+      border-radius: 12px 12px 0 12px;
+      display: inline-block;
+      max-width: 75%;
+    }
+
+    .bot-msg {
+      text-align: left;
+      background: #f5f5f5;
+      padding: 6px 10px;
+      margin: 6px;
+      border-radius: 12px 12px 12px 0;
+      display: inline-block;
+      max-width: 75%;
+    }
+
+    #chatWindow { display: none; } 
+
+    #chatbot-input-area {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+    #chatbot-input {
+      flex: 1;
+      border: none;
+      padding: 8px;
+      outline: none;
+    }
+    #chatbot-send {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    .hidden {
+      display: none;
+    }
+    .chat-box {
+      display: none; /* hidden at login */
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 300px;
+      height: 400px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+    
+  </style>
+</head>
+<body>
+
+  <!-- Overlay -->
+  <div id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light px-4">
+    <a class="navbar-brand" href="#">DYNO</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'orders' %}">Orders</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'cart' %}">Cart</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" onclick="toggleSidebar()">Profile</a></li>
+      </ul>
+    </div>
+  </nav>
+  
+
+  <!-- Search Bar -->
+  <div class="container my-4">
+    <form method="GET" action="" class="d-flex align-items-center gap-2">
+      <div class="position-relative flex-grow-1">
+        <input type="text" name="q" id="searchInput" class="form-control pe-5" placeholder="Search food items..." value="{{ query|default:'' }}">
+        <button type="button" onclick="clearSearch()" class="btn position-absolute end-0 top-50 translate-middle-y me-2 p-0" style="z-index: 10;">
+          ❌
+        </button>
+      </div>
+      <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+  </div>
+
+  <script>
+    function clearSearch() {
+      const input = document.getElementById("searchInput");
+      input.value = '';
+      input.form.submit();
+    }
+  </script>
+
+  <!-- Filter Bar -->
+  <div class="container mb-4">
+    <div class="d-flex justify-content-start gap-3 flex-wrap align-items-center">
+      <form method="GET" action="" id="sortForm">
+        <select class="form-select w-auto" name="sort" onchange="this.form.submit()">
+          <option {% if not sort %}selected{% endif %} disabled>Sort By</option>
+          <option value="price_low" {% if sort == "price_low" %}selected{% endif %}>Price (Low to High)</option>
+          <option value="price_high" {% if sort == "price_high" %}selected{% endif %}>Price (High to Low)</option>
+          <option value="rating" {% if sort == "rating" %}selected{% endif %}>Rating</option>
+        </select>
+        {% if cuisine %}<input type="hidden" name="cuisine" value="{{ cuisine }}">{% endif %}
+        {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+      </form>
+
+      <form method="GET" action="" class="d-flex mb-0 align-items-center" id="vegForm">
+        <input type="hidden" name="veg" value="1">
+        {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
+        {% if cuisine %}<input type="hidden" name="cuisine" value="{{ cuisine }}">{% endif %}
+        {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="veg" name="veg" value="1" onchange="this.form.submit()" {% if veg %}checked{% endif %}>
+          <label class="form-check-label" for="veg">Vegetarian</label>
+        </div>
+      </form>
+      <form method="GET" action="" class="d-flex mb-0 align-items-center" id="nonvegForm">
+        <input type="hidden" name="nonveg" value="1">
+        {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
+        {% if cuisine %}<input type="hidden" name="cuisine" value="{{ cuisine }}">{% endif %}
+        {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="nonveg" name="nonveg" value="1" onchange="this.form.submit()" {% if nonveg %}checked{% endif %}>
+          <label class="form-check-label" for="nonveg">Non-Vegetarian</label>
+        </div>
+      </form>
+    </div>
+    
+    <!-- Cuisine Filter Buttons -->
+<div class="filter-btn-group mt-3 d-flex flex-wrap gap-2">
+  {% for category in categories %}
+    <form method="GET" action="" class="d-inline">
+        <!-- Hidden filter values to preserve other selections -->
+        {% if sort %}
+          <input type="hidden" name="sort" value="{{ sort }}">
+        {% endif %}
+        {% if veg %}
+          <input type="hidden" name="veg" value="1">
+        {% endif %}
+        {% if nonveg %}
+          <input type="hidden" name="nonveg" value="1">
+        {% endif %}
+        {% if query %}
+          <input type="hidden" name="q" value="{{ query }}">
+        {% endif %}
+
+        <!-- Cuisine button -->
+        <button type="submit" name="cuisine" value="{% if category != 'All' %}{{ category }}{% endif %}"
+          class="btn btn-sm rounded-pill px-3 py-1
+                 {% if cuisine == category or not cuisine and category == 'All' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+          {{ category }}
+        </button>
+    </form>
+  {% endfor %}
+</div>
+
+<!-- Popup Message -->
+<div id="cartPopup">
+  <i class="fas fa-check-circle"></i> Item added to cart!
+</div>
+
+  <!-- Main Grid -->
+  <div class="container mb-5">
+    <div class="row main-flex">
+      <!-- Left: Food Cards (scrollable) -->
+      <div class="col-lg-8 food-list-scroll px-0 pe-lg-4">
+        {% for food in food_items %}
+        <div class="card food-card shadow-sm bg-white rounded" style="cursor:pointer;" >
+          <img src="{{ food.image.url }}" class="img-fluid rounded card-img-left" alt="{{ food.name }} image"
+               onclick="openFoodDetail({{ food.id }}); event.stopPropagation();" />
+          <div class="card-body d-flex flex-column justify-content-center">
+            <h5 class="card-title mb-2">{{ food.name }}</h5>
+            <div class="rating-details mb-1">
+              <span class="star-rating">
+                {% for i in "12345" %}
+                    {% if food.rating|floatformat:0 >= i|add:"0" %}
+                        <i class="fas fa-star"></i>
+                    {% elif food.rating|floatformat:1 >= i|add:"-0.5" %}
+                        <i class="fas fa-star-half-alt"></i>
+                    {% else %}
+                        <i class="far fa-star"></i>
+                    {% endif %}
+                {% endfor %}
+              </span>
+              <span><strong>{{ food.rating|floatformat:1|default:"0.0" }}/5</strong> ({{ food.reviews.count }} ratings)</span>
+            </div>
+            <p class="card-text mb-1 text-muted">{{ food.description|truncatewords:15 }}</p>
+            <p class="card-text mb-2" style="font-size:1.15em;"><strong>₹{{ food.price }}</strong></p>
+            <div class="d-flex flex-row">
+              <form method="POST" action="{% url 'order_now' food.id %}" class="me-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-sm">Order Now</button>
+              </form>
+              <button class="btn btn-outline-secondary btn-sm add-to-cart-btn"
+                      data-food-id="{{ food.id }}"
+                      data-url="{% url 'add_to_cart' food.id %}"
+                      onclick="showCartPopup()">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-warning">No food items found.</div>
+        {% endfor %}
+      </div>
+
+    <!-- Right: Suggestions -->
+    <div class="col-lg-4">
+      <div class="card shadow p-3 suggestion-sticky">
+        <h4 class="mb-3"><i class="fa fa-cutlery"></i> Suggestions Near You</h4>
+        <ul class="list-group">
+          {% if suggested_foods %}
+              {% for food in suggested_foods %}
+              <li class="list-group-item d-flex align-items-center">
+                <img src="{{ food.image.url }}" alt="{{ food.name }}"
+                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; margin-right: 10px;">
+                <div class="flex-grow-1">
+                  <strong>{{ food.name }}</strong><br>
+                  <small class="text-muted">{{ food.cuisine }} | ₹{{ food.price }}</small>
+                </div>
+                <span class="badge bg-success"><i class="fa fa-star"></i></span>
+              </li>
+              {% endfor %}
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+
+  <!-- Food Detail Modal -->
+  <div class="modal fade" id="foodDetailModal" tabindex="-1" aria-labelledby="foodDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content" id="foodDetailModalContent">
+        <!-- Loaded dynamically via JS -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Profile Sidebar -->
+  <div id="profileSidebar" class="profile-sidebar">
+    <div class="text-center">
+      <img src="https://i.pravatar.cc/80?u={{ request.user.username }}" alt="Avatar" class="profile-avatar">
+      <h5>{{ request.user.username }}</h5>
+      <p class="text-muted">{{ request.user.email }}</p>
+    </div>
+    <hr>
+    <div class="profile-option"><a href="#"><i class="fas fa-truck"></i> Track Order</a></div>
+    <div class="profile-option"><a href="/profile/details/"><i class="fas fa-id-badge"></i> Details</a></div>
+    <div class="profile-option"><a href="#"><i class="fas fa-university"></i> Bank Details</a></div>
+    <div class="profile-option"><a href="{% url 'orders' %}"><i class="fas fa-box"></i> Orders</a></div>
+    <div class="profile-option"><a href="{% url 'cart' %}"><i class="fas fa-shopping-cart"></i> Cart</a></div>
+    <div class="profile-option"><a href="#"><i class="fas fa-user-cog"></i> Account</a></div>
+    <div class="sidebar-divider"></div>
+    <div class="profile-option"><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
+    <div class="profile-option"><a href="/delete-account/"><i class="fas fa-user-slash"></i> Delete My Account</a></div>
+  </div>
+
+<!-- Chatbot Button + Window -->
+<div id="chatbot" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+
+  <!-- Chatbot Window (hidden initially) -->
+  <div id="chatWindow" 
+      style="display:none; width: 320px; height: 420px; background: #fff; border-radius: 15px; 
+              box-shadow: 0 4px 15px rgba(0,0,0,0.25); overflow: hidden; flex-direction: column;">
+    <!-- Header -->
+    <div style="background: #ff5722; color: white; padding: 10px 15px; display: flex; 
+                justify-content: space-between; align-items: center; font-weight: 600;">
+      <span>DYNO Assistant 🤖</span>
+      <button onclick="toggleChat()" style="background: none; border: none; color: white; font-size: 18px;">✖</button>
+    </div>
+
+    <!-- Messages -->
+    <div id="messages" style="flex: 1; padding: 10px; overflow-y: auto; font-size: 14px; background:#fafafa;"></div>
+
+    <!-- Input -->
+    <div style="display: flex; border-top: 1px solid #ddd;">
+      <input id="userInput" type="text" placeholder="Type a message..." 
+            style="flex: 1; padding: 10px; border: none; outline: none; font-size: 14px;">
+      <button onclick="sendMessage()" 
+              style="background: #ff5722; color: white; border: none; padding: 10px 14px; font-weight: 500;">
+        Send
+      </button>
+    </div>
+  </div>
+
+  <!-- Floating Button (visible initially) -->
+  <button id="chatBtn" onclick="toggleChat()" 
+          style="background: #ff5722; color: white; border: none; border-radius: 50%; 
+                width: 60px; height: 60px; font-size: 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+    💬
+  </button>
+</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function toggleSidebar() {
+      document.getElementById('profileSidebar').classList.toggle('active');
+      document.getElementById('overlay').classList.toggle('active');
+    }
+    function closeSidebar() {
+      document.getElementById('profileSidebar').classList.remove('active');
+      document.getElementById('overlay').classList.remove('active');
+    }
+    function openFoodDetail(foodId) {
+      const modalContent = document.getElementById("foodDetailModalContent");
+      modalContent.innerHTML = `
+        <div class="text-center p-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      `;
+      history.pushState({ foodId }, '', `#food-${foodId}`);
+      fetch(`/food/${foodId}/`)
+        .then(response => {
+          if (!response.ok) throw new Error("Failed to load content");
+          return response.text();
+        })
+        .then(data => {
+          modalContent.innerHTML = data;
+          new bootstrap.Modal(document.getElementById('foodDetailModal')).show();
+        })
+        .catch(error => {
+          modalContent.innerHTML = `
+            <div class="p-5 text-center text-danger">
+              <strong>⚠️ Can't load the food details.</strong><br>
+              Please try again later.
+            </div>
+          `;
+          console.error(error);
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      const buttons = document.querySelectorAll('.add-to-cart-btn');
+      buttons.forEach(button => {
+        button.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const foodId = this.dataset.foodId;
+          const url = this.dataset.url;
+          fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ food_id: foodId })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              showCartPopup();
+            } else {
+              alert("❌ Failed to add item.");
+            }
+          });
+        });
+      });
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+    });
+    function showCartPopup() {
+      const popup = document.getElementById('cartPopup');
+      popup.style.display = 'block';
+
+      // Restart animation every time
+      popup.style.animation = 'none';
+      popup.offsetHeight; // trigger reflow
+      popup.style.animation = 'slideIn 0.5s ease, fadeOut 0.5s ease 2s forwards';
+
+      // Hide after animation
+      setTimeout(() => {
+        popup.style.display = 'none';
+      }, 2500);
+    }
+
+
+    function openFoodDetail(foodId) {
+      const modalContent = document.getElementById("foodDetailModalContent");
+      modalContent.innerHTML = `<div class="text-center p-5"><div class="spinner-border text-primary" role="status"></div></div>`;
+
+      history.pushState({ foodId }, '', `#food-${foodId}`);
+
+      fetch(`/food/${foodId}/`)
+        .then(response => response.text())
+        .then(data => {
+          modalContent.innerHTML = data;
+          new bootstrap.Modal(document.getElementById('foodDetailModal')).show();
+        })
+        .catch(() => {
+          modalContent.innerHTML = `<div class="p-5 text-center text-danger"><strong>⚠️ Unable to load food details.</strong></div>`;
+        });
+    }
+
+    window.addEventListener('popstate', function () {
+      if (!location.hash.startsWith('#food-')) {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('foodDetailModal'));
+        modal?.hide();
+      }
+    });
+
+    window.addEventListener('pageshow', function (event) {
+      if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+        window.location.reload();
+      }
+    });
+
+  function toggleChat() {
+    const chatWindow = document.getElementById("chatWindow");
+    const chatBtn = document.getElementById("chatBtn");
+
+    if (chatWindow.style.display === "none" || chatWindow.style.display === "") {
+      chatWindow.style.display = "flex"; // show chat
+      chatBtn.style.display = "none";    // hide button
+    } else {
+      chatWindow.style.display = "none"; // hide chat
+      chatBtn.style.display = "block";   // show button
+    }
+  }
+
+  function appendMessage(sender, text) {
+    const msgDiv = document.createElement("div");
+    msgDiv.className = sender === "You" ? "user-msg" : "bot-msg";
+    msgDiv.innerText = text;
+    document.getElementById("messages").appendChild(msgDiv);
+    document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+  }
+
+  function sendMessage() {
+    const input = document.getElementById("userInput");
+    const text = input.value.trim();
+    if (!text) return;
+
+    appendMessage("You", text);
+    input.value = "";
+
+    fetch("/chatbot_view/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCookie("csrftoken")
+      },
+      body: JSON.stringify({ message: text })
+    })
+    .then(res => res.json())
+    .then(data => appendMessage("Bot", data.reply))
+    .catch(() => appendMessage("Bot", "Sorry, something went wrong."));
+  }
+
+  // Allow sending message on Enter key
+  document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("userInput");
+    input.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+  });
+
+  // CSRF helper
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + "=")) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Select all Add to Cart buttons
+  const addToCartButtons = document.querySelectorAll(".add-to-cart-btn");
+
+  addToCartButtons.forEach(button => {
+    button.addEventListener("click", function (e) {
+      e.preventDefault();  // prevent page reload
+
+      const url = this.getAttribute("data-url");
+
+      // AJAX call to add item to cart
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}", // ensure CSRF token works
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showCartPopup(); // ✅ call popup function
+        }
+      })
+      .catch(error => console.error("Error:", error));
+    });
+  });
+});
+</script>
+
+  <footer>
+    <div class="text-center mt-4 text-muted">
+      📞 +91 9876543210 &nbsp; | &nbsp;
+      📧 dynogroup@contact.com &nbsp; | &nbsp;
+      📷 Instagram: <a href="https://instagram.com/dynofoods" style="color: #ff5722;">@dynofoods</a> &nbsp; | &nbsp;
+      📘 Facebook: <a href="https://facebook.com/dynofoods" style="color: #ff5722;">/dynofoods</a>
+    </div>
+  </footer>
+</body>
+</html>

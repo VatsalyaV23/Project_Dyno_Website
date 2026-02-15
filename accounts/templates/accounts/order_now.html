@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DYNO - Order Now</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-image: linear-gradient(to right, #ffffffcc, #ffffffcc), url("{% static 'accounts/images1/bg-pattern.jpg' %}");
+      background-size: cover;
+      background-attachment: fixed;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 40px;
+    }
+    .order-container {
+      background-color: rgba(255, 255, 255, 0.92);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+    .order-container img {
+      width: 280px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+    .details {
+      flex: 1;
+    }
+    .details h2 {
+      font-weight: bold;
+    }
+    .btn-place {
+      background-color: #ff5722;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-weight: bold;
+      color: white;
+    }
+    .btn-place:hover {
+      background-color: #e64a19;
+    }
+    .success-box {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #d4edda;
+      color: #155724;
+      font-size: 20px;
+      text-align: center;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .track-status {
+      margin-top: 16px;
+      font-size: 1.07em;
+      color: #ff9800;
+      font-weight: 500;
+    }
+    .delivered-status {
+      color: #4caf50;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="order-container">
+      <img src="{{ food.image.url }}" alt="{{ food.name }}">
+      <div class="details">
+        <h2>{{ food.name }}</h2>
+        <p><strong>Price:</strong> ₹{{ food.price }}</p>
+        <p><strong>Delivery Time:</strong> Arriving in 30–40 minutes</p>
+        <p><strong>Description:</strong> {{ food.description }}</p>
+        <p><strong>Prepared by:</strong> {{ food.added_by.username|capfirst }} (DYNO Chef)</p>
+        <p><strong>Delivered from:</strong> {{ food.added_by.profile.address|default:"DYNO Central Kitchen" }}</p>
+
+        {% if not order_placed %}
+          <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn-place">Place Order</button>
+          </form>
+        {% endif %}
+
+        {% if tracking %}
+          <div class="track-status {% if tracking.status == 'Delivered' %}delivered-status{% endif %}">
+            {% if tracking.status == "Delivering" %}
+              🚚 Order is on the way! ({{ tracking.eta }} min left)
+            {% else %}
+              ✅ Delivered!
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    {% if order_placed %}
+    <div class="success-box" id="successMessage">
+      ✅ Your order for <strong>{{ food.name }}</strong> has been placed successfully! 🍽️<br>
+      Sit back and relax while we prepare your food.
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>
